@@ -11,8 +11,9 @@ headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 url1 = '/bar'
 url2 = '/foo'
 
+# refer to:  https://gist.github.com/nitaku/10d0662536f37a087e1b
+
 class RequestHandler(BaseHTTPRequestHandler):
-    cnt = 0
     def _set_headers(self):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
@@ -38,13 +39,13 @@ class RequestHandler(BaseHTTPRequestHandler):
         self._set_headers()
         # read the message and convert it into a python dictionary
         length = int(self.headers('content-length'))
+        msg = json.loads(self.rfile.read(length))
+        print(f'msg received  : {msg}')
 
         if self.path == url1:
-            # send next box
             print("current box response: {MixPalletizeHandler.cnt}")
 
         elif self.path == url2:
-            # print pallet
             print(url2)
 
         response = BytesIO()
@@ -56,11 +57,9 @@ class RequestHandler(BaseHTTPRequestHandler):
 
 def run_server():
     handler_object = RequestHandler
-
     PORT = 60001
     my_server = socketserver.TCPServer(("", PORT), handler_object)
-
-    # Star the server
+    # Start the server
     my_server.serve_forever()
 
 
